@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamu Büyüklüğü ve Yolsuzluk İlişkisi - İnteraktif Simülasyon</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --burgundy: #8B0000;
+            --gold: #DAA520;
+            --dark: #1a1a1a;
+            --light-bg: #fafaf8;
+            --text: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light-bg);
+            padding: 2rem;
+            color: var(--text);
+        }
+
+        .simulation-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--burgundy);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: var(--burgundy);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .controls-section {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.03) 0%, rgba(218, 165, 32, 0.03) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--gold);
+        }
+
+        .slider-container {
+            margin-bottom: 2rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .slider-label h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .slider-value {
+            background: var(--burgundy);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .slider {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            margin: 1rem 0;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--burgundy);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(139, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            background: var(--gold);
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--burgundy);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(139, 0, 0, 0.3);
+        }
+
+        .slider-markers {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin: 2rem 0;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 3px solid var(--burgundy);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--burgundy);
+        }
+
+        .metric-unit {
+            font-size: 1rem;
+            color: #999;
+        }
+
+        .interpretation {
+            background: rgba(218, 165, 32, 0.08);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--gold);
+            margin: 2rem 0;
+        }
+
+        .interpretation h3 {
+            color: var(--burgundy);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .interpretation p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 0.8rem;
+        }
+
+        .reference {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2.5rem;
+            border: 2px dashed #dee2e6;
+        }
+
+        .reference-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .reference-icon {
+            font-size: 1.5rem;
+        }
+
+        .reference h4 {
+            color: var(--burgundy);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .reference p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .reference-citation {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            color: #555;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .warning-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 1rem 0;
+            border: 1px solid #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .simulation-container {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .chart-container {
+                height: 300px;
+                padding: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1200px; margin: 0 auto; padding: 2rem;"><a href="index.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #8B0000; text-decoration: none; font-weight: 600;">← Ana Sayfaya Dön</a></div>
+    <div class="simulation-container">
+        <div class="header">
+            <h1>📊 Kamu Büyüklüğü ve Yolsuzluk İlişkisi</h1>
+            <p>Türkiye'de 1950-2019 dönemi verilerine dayalı interaktif simülasyon</p>
+            <span class="warning-badge">⚠️ Simülasyon • Eğitim Amaçlı</span>
+        </div>
+
+        <div class="controls-section">
+            <div class="slider-container">
+                <div class="slider-label">
+                    <h3>Kamu Kesimi Büyüklüğü</h3>
+                    <div class="slider-value" id="govSizeDisplay">35%</div>
+                </div>
+                <input 
+                    type="range" 
+                    min="10" 
+                    max="60" 
+                    value="35" 
+                    class="slider" 
+                    id="govSizeSlider"
+                >
+                <div class="slider-markers">
+                    <span>Küçük (10%)</span>
+                    <span>Orta (35%)</span>
+                    <span>Büyük (60%)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">Kamu Harcaması/GSYİH</div>
+                <div class="metric-value">
+                    <span id="govSizeMetric">35</span><span class="metric-unit">%</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Tahmini Yolsuzluk Skoru</div>
+                <div class="metric-value">
+                    <span id="corruptionMetric">54</span><span class="metric-unit">/100</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Risk Seviyesi</div>
+                <div class="metric-value" id="riskLevel" style="font-size: 1.5rem;">
+                    Orta
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="corruptionChart"></canvas>
+        </div>
+
+        <div class="interpretation">
+            <h3>📈 Yorumlama</h3>
+            <p id="interpretationText">
+                Kamu kesimi büyüklüğü %35 seviyesinde olduğunda, yolsuzluk skoru yaklaşık 54 olarak tahmin edilmektedir. 
+                Bu, orta düzey bir yolsuzluk riski anlamına gelir.
+            </p>
+            <p>
+                <strong>Model açıklaması:</strong> Simülasyon, kamu harcamalarının GSYİH içindeki payı ile yolsuzluk algı endeksi 
+                arasındaki pozitif korelasyonu göstermektedir. Kamu kesimi büyüdükçe, bürokrasi ve kamu kaynaklarının 
+                dağıtımında keyfi kararların artma riski de yükselmektedir.
+            </p>
+        </div>
+
+        <div class="reference">
+            <div class="reference-header">
+                <span class="reference-icon">📚</span>
+                <h4>Akademik Referans</h4>
+            </div>
+            <p>
+                Bu interaktif simülasyon, <strong>Dr. Özgür Teoman</strong>'ın Türkiye'de kamu kesimi büyüklüğü ve 
+                yolsuzluk ilişkisini inceleyen akademik çalışmasından ilham alınarak hazırlanmıştır.
+            </p>
+            <p>
+                Çalışma, 1950-2019 dönemi verilerini kullanarak kamu harcamalarının GSYİH içindeki payı ile yolsuzluk 
+                algı endeksi arasındaki ilişkiyi ekonometrik yöntemlerle analiz etmiştir.
+            </p>
+            <div class="reference-citation">
+                Teoman, Ö. (2023). "Government Size and Corruption in Turkey: An Empirical Analysis (1950-2019)". 
+                Hacettepe Üniversitesi İktisadi ve İdari Bilimler Fakültesi.
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.85rem; color: #999;">
+                <strong>Not:</strong> Bu simülasyon eğitim amaçlıdır ve basitleştirilmiş bir model kullanmaktadır. 
+                Gerçek akademik bulgular için orijinal çalışmaya başvurulması önerilir.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js Yapılandırması
+        const ctx = document.getElementById('corruptionChart').getContext('2d');
+        
+        // Başlangıç verileri
+        let chartData = {
+            labels: [],
+            datasets: [{
+                label: 'Yolsuzluk Skoru',
+                data: [],
+                borderColor: '#8B0000',
+                backgroundColor: 'rgba(139, 0, 0, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: '#8B0000',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        };
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#2d2d2d'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Kamu Büyüklüğü (%)',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#2d2d2d'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Yolsuzluk Skoru (0-100)',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#2d2d2d'
+                        },
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 750,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+
+        // Yolsuzluk skorunu hesaplama fonksiyonu
+        // Model: Pozitif korelasyon (kamu büyüklüğü arttıkça yolsuzluk artar)
+        function calculateCorruption(govSize) {
+            // Basit doğrusal model: y = a + bx
+            // govSize 10-60 arası, corruption 20-85 arası değişsin
+            const baseCorruption = 20;
+            const slope = 1.3; // Her %1 kamu artışı için yaklaşık 1.3 puan artış
+            
+            let corruption = baseCorruption + (slope * govSize);
+            
+            // 0-100 arasında sınırla
+            corruption = Math.max(0, Math.min(100, corruption));
+            
+            return Math.round(corruption);
+        }
+
+        // Risk seviyesi belirleme
+        function getRiskLevel(corruption) {
+            if (corruption < 40) return { text: 'Düşük', color: '#16a34a' };
+            if (corruption < 60) return { text: 'Orta', color: '#f59e0b' };
+            return { text: 'Yüksek', color: '#dc2626' };
+        }
+
+        // Yorumlama metni oluşturma
+        function getInterpretation(govSize, corruption) {
+            let text = `Kamu kesimi büyüklüğü %${govSize} seviyesinde olduğunda, yolsuzluk skoru yaklaşık ${corruption} olarak tahmin edilmektedir. `;
+            
+            if (corruption < 40) {
+                text += 'Bu, düşük düzey bir yolsuzluk riski anlamına gelir. Küçük kamu kesimi, sınırlı bürokrasi ve daha az keyfi karar alanı yaratır.';
+            } else if (corruption < 60) {
+                text += 'Bu, orta düzey bir yolsuzluk riski anlamına gelir. Kamu kesimi büyüdükçe, kaynak dağıtımında şeffaflık ve hesap verebilirlik önem kazanır.';
+            } else {
+                text += 'Bu, yüksek düzey bir yolsuzluk riski anlamına gelir. Büyük kamu kesimi, geniş bürokrasi ve kaynak dağıtımında artan keyfilik potansiyeli yaratır.';
+            }
+            
+            return text;
+        }
+
+        // Grafiği güncelleme
+        function updateChart(govSize) {
+            const corruption = calculateCorruption(govSize);
+            
+            // Veri noktası ekle (son 10 değeri tut)
+            chartData.labels.push(`${govSize}%`);
+            chartData.datasets[0].data.push(corruption);
+            
+            if (chartData.labels.length > 10) {
+                chartData.labels.shift();
+                chartData.datasets[0].data.shift();
+            }
+            
+            chart.update();
+        }
+
+        // UI güncelleme
+        function updateUI(govSize) {
+            const corruption = calculateCorruption(govSize);
+            const risk = getRiskLevel(corruption);
+            
+            // Slider değeri
+            document.getElementById('govSizeDisplay').textContent = `${govSize}%`;
+            
+            // Metrikler
+            document.getElementById('govSizeMetric').textContent = govSize;
+            document.getElementById('corruptionMetric').textContent = corruption;
+            
+            // Risk seviyesi
+            const riskElement = document.getElementById('riskLevel');
+            riskElement.textContent = risk.text;
+            riskElement.style.color = risk.color;
+            
+            // Yorumlama
+            document.getElementById('interpretationText').textContent = getInterpretation(govSize, corruption);
+            
+            // Grafiği güncelle
+            updateChart(govSize);
+        }
+
+        // Slider event listener
+        const slider = document.getElementById('govSizeSlider');
+        slider.addEventListener('input', function() {
+            updateUI(parseInt(this.value));
+        });
+
+        // Sayfa yüklendiğinde başlangıç verilerini göster
+        window.addEventListener('load', function() {
+            // İlk değer için grafik verilerini oluştur
+            for (let i = 10; i <= 35; i += 5) {
+                const corruption = calculateCorruption(i);
+                chartData.labels.push(`${i}%`);
+                chartData.datasets[0].data.push(corruption);
+            }
+            chart.update();
+            
+            // UI'ı güncelle
+            updateUI(35);
+        });
+    </script>
+</body>
+</html>

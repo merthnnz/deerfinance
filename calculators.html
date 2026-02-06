@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekonometrik Araçlar - Enflasyon ve GSYİH Hesaplayıcıları</title>
+    <style>
+        :root {
+            --burgundy: #8B0000;
+            --gold: #DAA520;
+            --dark: #1a1a1a;
+            --light-bg: #fafaf8;
+            --text: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light-bg);
+            padding: 2rem;
+            color: var(--text);
+        }
+
+        .calculators-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .section-header h1 {
+            font-size: 2.5rem;
+            color: var(--burgundy);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .section-header p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .badge-academic {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--burgundy), #a00000);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .calculators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--burgundy);
+        }
+
+        .calculator-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .calculator-icon {
+            font-size: 2rem;
+        }
+
+        .calculator-title h2 {
+            font-size: 1.8rem;
+            color: var(--burgundy);
+            font-weight: 700;
+        }
+
+        .calculator-description {
+            background: rgba(218, 165, 32, 0.08);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--gold);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--burgundy);
+            box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: white;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--burgundy);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--burgundy), #a00000);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.05), rgba(218, 165, 32, 0.05));
+            border-radius: 12px;
+            border: 2px solid var(--gold);
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: var(--burgundy);
+            font-size: 1.1rem;
+        }
+
+        .result-explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #666;
+            border-left: 3px solid var(--burgundy);
+        }
+
+        .formula-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border: 1px dashed #dee2e6;
+        }
+
+        .formula-title {
+            font-weight: 600;
+            color: var(--burgundy);
+            margin-bottom: 0.5rem;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .info-note {
+            background: rgba(30, 58, 95, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #374151;
+            border-left: 3px solid #1e3a5f;
+        }
+
+        .info-note strong {
+            color: #1e3a5f;
+        }
+
+        @media (max-width: 768px) {
+            .calculators-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header h1 {
+                font-size: 2rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculators-container">
+        <div style="margin-bottom: 2rem;">
+            <a href="index.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--burgundy); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                ← Ana Sayfaya Dön
+            </a>
+        </div>
+        
+        <div class="section-header">
+            <h1>📊 Ekonometrik Araçlar</h1>
+            <p>Enflasyon ve GSYİH hesaplamaları için uygulamalı araçlar</p>
+            <span class="badge-academic">🎓 Akademik Araştırma Amaçlı</span>
+        </div>
+
+        <div class="calculators-grid">
+            <!-- ENFLASYON HESAPLAYICI -->
+            <div class="calculator-card">
+                <div class="calculator-title">
+                    <span class="calculator-icon">💰</span>
+                    <h2>Enflasyon Hesaplayıcı</h2>
+                </div>
+
+                <div class="calculator-description">
+                    <strong>Satın Alma Gücü Analizi:</strong> Belirli bir tutarın zaman içindeki değer kaybını hesaplayın. 
+                    Enflasyon, paranın satın alma gücünün düşmesi demektir.
+                </div>
+
+                <form id="inflationForm">
+                    <div class="form-group">
+                        <label class="form-label">Başlangıç Tutarı (₺)</label>
+                        <input type="number" class="form-input" id="initialAmount" placeholder="10000" required min="0" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Başlangıç Yılı</label>
+                        <select class="form-select" id="startYear" required>
+                            <option value="">Yıl Seçin</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Bitiş Yılı</label>
+                        <select class="form-select" id="endYear" required>
+                            <option value="">Yıl Seçin</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Ortalama Yıllık Enflasyon Oranı (%)</label>
+                        <input type="number" class="form-input" id="inflationRate" placeholder="15.5" required min="0" max="1000" step="0.1">
+                    </div>
+
+                    <button type="submit" class="calculate-btn">💡 Hesapla</button>
+                </form>
+
+                <div class="result-box" id="inflationResult">
+                    <div class="result-title">
+                        📈 Hesaplama Sonucu
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Başlangıç Değeri:</span>
+                        <span class="result-value" id="inflInitial">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Bitiş Değeri (Bugünkü Karşılık):</span>
+                        <span class="result-value" id="inflFinal">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Değer Kaybı:</span>
+                        <span class="result-value" id="inflLoss" style="color: #dc2626;">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Değer Kaybı Oranı:</span>
+                        <span class="result-value" id="inflLossPercent" style="color: #dc2626;">-</span>
+                    </div>
+                    <div class="result-explanation" id="inflExplanation">
+                        -
+                    </div>
+                    <div class="formula-box">
+                        <div class="formula-title">📐 Formül:</div>
+                        Gelecek Değer = Bugünkü Değer × (1 + Enflasyon)^n<br>
+                        Satın Alma Gücü = Başlangıç Değeri / (1 + Enflasyon)^n
+                    </div>
+                </div>
+
+                <div class="info-note">
+                    <strong>💡 Not:</strong> Bu hesaplama, bileşik enflasyon etkisini gösterir. 
+                    Gerçek enflasyon oranları yıllara göre değişiklik gösterir. 
+                    TÜİK verilerine göre Türkiye'nin 2020-2024 ortalaması yaklaşık %45'tir.
+                </div>
+            </div>
+
+            <!-- GSYİH DEFLATÖR HESAPLAYICI -->
+            <div class="calculator-card">
+                <div class="calculator-title">
+                    <span class="calculator-icon">📉</span>
+                    <h2>GSYİH Deflatör Hesaplayıcı</h2>
+                </div>
+
+                <div class="calculator-description">
+                    <strong>Nominal ↔ Reel Dönüşüm:</strong> Nominal GSYİH'yi reel GSYİH'ye çevirin veya GSYİH deflatörünü hesaplayın. 
+                    Ekonomik büyümenin gerçek boyutunu ölçün.
+                </div>
+
+                <form id="gdpForm">
+                    <div class="form-group">
+                        <label class="form-label">Nominal GSYİH (Milyar ₺)</label>
+                        <input type="number" class="form-input" id="nominalGDP" placeholder="15000" required min="0" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Baz Yıl GSYİH (Milyar ₺)</label>
+                        <input type="number" class="form-input" id="baseGDP" placeholder="10000" required min="0" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Baz Yıl</label>
+                        <select class="form-select" id="gdpBaseYear" required>
+                            <option value="">Yıl Seçin</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Cari Yıl</label>
+                        <select class="form-select" id="gdpCurrentYear" required>
+                            <option value="">Yıl Seçin</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="calculate-btn">💡 Hesapla</button>
+                </form>
+
+                <div class="result-box" id="gdpResult">
+                    <div class="result-title">
+                        📊 Hesaplama Sonucu
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Nominal GSYİH:</span>
+                        <span class="result-value" id="gdpNominal">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Reel GSYİH (Baz Yıl Fiyatlarıyla):</span>
+                        <span class="result-value" id="gdpReal">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">GSYİH Deflatör:</span>
+                        <span class="result-value" id="gdpDeflator">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Zımni Fiyat Artışı:</span>
+                        <span class="result-value" id="gdpInflation" style="color: #f59e0b;">-</span>
+                    </div>
+                    <div class="result-explanation" id="gdpExplanation">
+                        -
+                    </div>
+                    <div class="formula-box">
+                        <div class="formula-title">📐 Formül:</div>
+                        GSYİH Deflatör = (Nominal GSYİH / Reel GSYİH) × 100<br>
+                        Reel GSYİH = (Nominal GSYİH / GSYİH Deflatör) × 100<br>
+                        Zımni Enflasyon = GSYİH Deflatör - 100
+                    </div>
+                </div>
+
+                <div class="info-note">
+                    <strong>💡 Not:</strong> GSYİH deflatör, ekonomideki genel fiyat seviyesini ölçer. 
+                    TÜFE'den farkı, sadece tüketim mallarını değil tüm ekonomiyi kapsamasıdır. 
+                    Türkiye için TÜİK tarafından yayınlanır.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Populate year dropdowns
+        const currentYear = new Date().getFullYear();
+        const yearSelects = ['startYear', 'endYear', 'gdpBaseYear', 'gdpCurrentYear'];
+        
+        yearSelects.forEach(selectId => {
+            const select = document.getElementById(selectId);
+            for (let year = currentYear; year >= 1950; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                select.appendChild(option);
+            }
+        });
+
+        // ENFLASYON HESAPLAYICI
+        document.getElementById('inflationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const initialAmount = parseFloat(document.getElementById('initialAmount').value);
+            const startYear = parseInt(document.getElementById('startYear').value);
+            const endYear = parseInt(document.getElementById('endYear').value);
+            const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+
+            if (endYear <= startYear) {
+                alert('Bitiş yılı başlangıç yılından sonra olmalıdır!');
+                return;
+            }
+
+            const years = endYear - startYear;
+            const finalValue = initialAmount / Math.pow(1 + inflationRate, years);
+            const valueLoss = initialAmount - finalValue;
+            const lossPercent = (valueLoss / initialAmount) * 100;
+
+            // Display results
+            document.getElementById('inflInitial').textContent = `₺${initialAmount.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('inflFinal').textContent = `₺${finalValue.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('inflLoss').textContent = `₺${valueLoss.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('inflLossPercent').textContent = `%${lossPercent.toFixed(2)}`;
+
+            // Explanation
+            const explanation = `${startYear} yılında ₺${initialAmount.toLocaleString('tr-TR')} olan bir tutarın, 
+                yıllık ortalama %${(inflationRate * 100).toFixed(1)} enflasyon altında, 
+                ${endYear} yılında sadece ₺${finalValue.toLocaleString('tr-TR', {maximumFractionDigits: 0})} değerinde 
+                mal ve hizmet satın alabilir. Bu, %${lossPercent.toFixed(1)} oranında bir satın alma gücü kaybı demektir. 
+                ${years} yıl içinde paranın reel değeri ${(years > 10) ? 'ciddi oranda' : 'önemli ölçüde'} azalmıştır.`;
+
+            document.getElementById('inflExplanation').textContent = explanation;
+            document.getElementById('inflationResult').classList.add('show');
+        });
+
+        // GSYİH DEFLATÖR HESAPLAYICI
+        document.getElementById('gdpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nominalGDP = parseFloat(document.getElementById('nominalGDP').value);
+            const baseGDP = parseFloat(document.getElementById('baseGDP').value);
+            const baseYear = parseInt(document.getElementById('gdpBaseYear').value);
+            const currentYear = parseInt(document.getElementById('gdpCurrentYear').value);
+
+            if (currentYear <= baseYear) {
+                alert('Cari yıl baz yıldan sonra olmalıdır!');
+                return;
+            }
+
+            // Assuming base year deflator = 100
+            const deflator = (nominalGDP / baseGDP) * 100;
+            const realGDP = (nominalGDP / deflator) * 100;
+            const implicitInflation = deflator - 100;
+            const years = currentYear - baseYear;
+            const annualInflation = (Math.pow(deflator / 100, 1 / years) - 1) * 100;
+
+            // Display results
+            document.getElementById('gdpNominal').textContent = `${nominalGDP.toLocaleString('tr-TR', {minimumFractionDigits: 2})} Milyar ₺`;
+            document.getElementById('gdpReal').textContent = `${realGDP.toLocaleString('tr-TR', {minimumFractionDigits: 2})} Milyar ₺`;
+            document.getElementById('gdpDeflator').textContent = deflator.toFixed(2);
+            document.getElementById('gdpInflation').textContent = `%${implicitInflation.toFixed(2)} (Yıllık Ort: %${annualInflation.toFixed(2)})`;
+
+            // Explanation
+            const explanation = `${baseYear} baz yılına göre, ${currentYear} yılında nominal GSYİH ${nominalGDP.toLocaleString('tr-TR')} milyar ₺'dir. 
+                Ancak fiyat artışları göz önüne alındığında, reel GSYİH ${realGDP.toLocaleString('tr-TR', {maximumFractionDigits: 0})} milyar ₺'dir. 
+                GSYİH deflatör ${deflator.toFixed(1)}, bu da ${years} yıllık dönemde genel fiyat seviyesinin %${implicitInflation.toFixed(1)} arttığını gösterir. 
+                Bu, yıllık ortalama %${annualInflation.toFixed(2)} zımni enflasyona denk gelir. 
+                ${deflator > 150 ? 'Yüksek enflasyon baskısı altında ekonomik büyüme nominal değerden çok daha düşüktür.' : 'Makul bir fiyat artışı ile ekonomik büyüme sürdürülebilir görünmektedir.'}`;
+
+            document.getElementById('gdpExplanation').textContent = explanation;
+            document.getElementById('gdpResult').classList.add('show');
+        });
+    </script>
+</body>
+</html>

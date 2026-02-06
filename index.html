@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deer Finance - Makroekonomi Rehberi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --burgundy: #8B0000;
+            --gold: #DAA520;
+            --dark: #1a1a1a;
+            --light-bg: #fafaf8;
+            --text: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--light-bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 3px solid var(--gold);
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(139, 0, 0, 0.08);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 80px;
+            height: auto;
+        }
+
+        .logo-text h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--burgundy);
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--burgundy);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--burgundy);
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--burgundy) 0%, #5a0000 100%);
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        /* Features Grid */
+        .features-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--burgundy);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--burgundy);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(139, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--burgundy);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            background: rgba(218, 165, 32, 0.1);
+            color: var(--gold);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            color: var(--burgundy);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .cta-button {
+            gap: 1rem;
+        }
+
+        /* About */
+        .about-section {
+            background: white;
+            padding: 4rem 2rem;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about-content h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--burgundy);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-content p {
+            color: #555;
+            line-height: 1.9;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h3 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a:hover {
+            color: var(--gold);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                gap: 1rem;
+                justify-content: center;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TRADINGVIEW TICKER -->
+    <div class="tradingview-widget-container" style="width: 100%; overflow: hidden;">
+        <div class="tradingview-widget-container__widget"></div>
+    </div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+    {
+        "symbols": [
+            {"proName": "BINANCE:BTCUSDT", "title": "Bitcoin"},
+            {"proName": "FOREXCOM:XAUUSD", "title": "Ons Altın"},
+            {"proName": "TVC:UKOIL", "title": "Brent Petrol"},
+            {"proName": "NASDAQ:NDX", "title": "NASDAQ 100"},
+            {"proName": "BINANCE:ETHUSDT", "title": "Ethereum"},
+            {"proName": "BIST:XU100", "title": "BIST 100"}
+        ],
+        "showSymbolLogo": true,
+        "colorTheme": "dark",
+        "isTransparent": false,
+        "displayMode": "adaptive",
+        "locale": "tr"
+    }
+    </script>
+
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="deerfinance-optimized.jpg" alt="Deer Finance Logo" class="logo-img">
+                <div class="logo-text">
+                    <h1>DEER FINANCE</h1>
+                    <p>Makroekonomi Rehberi</p>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="#features">Özellikler</a></li>
+                    <li><a href="#about">Hakkımda</a></li>
+                    <li><a href="#contact">İletişim</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h2>Makroekonomik Kavramları Anlamak</h2>
+        <p>Finansal piyasaları etkileyen göstergeler, politikalar ve ekonomik kavramlar</p>
+    </section>
+
+    <section id="features" class="features-section">
+        <h2 class="section-title">🎓 Akademik Araçlar ve İçerikler</h2>
+        
+        <div class="features-grid">
+            <!-- Calculators -->
+            <a href="calculators.html" class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Ekonometrik Araçlar</h3>
+                <p class="feature-description">
+                    Enflasyon hesaplayıcı ve GSYİH deflatör hesaplama araçları. 
+                    Satın alma gücü analizi ve reel ekonomik büyüme hesaplamaları.
+                </p>
+                <span class="feature-badge">Analitik Araçlar</span>
+                <div class="cta-button">Hesaplayıcılara Git →</div>
+            </a>
+
+            <!-- Simulation -->
+            <a href="simulation.html" class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">Yolsuzluk Simülasyonu</h3>
+                <p class="feature-description">
+                    Prof. Dr. Özgür Teoman'ın "Government Size and Corruption" çalışmasına dayalı 
+                    interaktif simülasyon. Kamu büyüklüğü ve yolsuzluk ilişkisi.
+                </p>
+                <span class="feature-badge">İnteraktif Model</span>
+                <div class="cta-button">Simülasyonu Aç →</div>
+            </a>
+
+            <!-- Timeline -->
+            <a href="timeline.html" class="feature-card">
+                <div class="feature-icon">📜</div>
+                <h3 class="feature-title">Türkiye İktisat Tarihi</h3>
+                <p class="feature-description">
+                    1923'ten günümüze Türkiye ekonomisinin dönüm noktaları. 
+                    Kurumsal iktisat perspektifiyle hazırlanmış interaktif zaman çizelgesi.
+                </p>
+                <span class="feature-badge">Tarihsel Analiz</span>
+                <div class="cta-button">Timeline'ı İncele →</div>
+            </a>
+
+            <!-- Interactive Data -->
+            <a href="data.html" class="feature-card">
+                <div class="feature-icon">💹</div>
+                <h3 class="feature-title">Interactive Data</h3>
+                <p class="feature-description">
+                    FRED (Federal Reserve Economic Data) tabanlı ekonomik göstergeler. 
+                    VIX, Fed Faiz, Enflasyon, Tahvil Getirisi ve daha fazlası.
+                </p>
+                <span class="feature-badge">Canlı Veriler</span>
+                <div class="cta-button">Verileri Gör →</div>
+            </a>
+
+            <!-- Terms -->
+            <a href="terms.html" class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3 class="feature-title">Finansal Terimler Sözlüğü</h3>
+                <p class="feature-description">
+                    14 temel makroekonomik kavram ve detaylı açıklamaları. 
+                    VIX'ten Carry Trade'e, GSYİH'den CDS'e kapsamlı rehber.
+                </p>
+                <span class="feature-badge">Eğitim İçeriği</span>
+                <div class="cta-button">Terimleri İncele →</div>
+            </a>
+
+            <!-- Coming Soon -->
+            <div class="feature-card" style="opacity: 0.6; cursor: default;">
+                <div class="feature-icon">🔬</div>
+                <h3 class="feature-title">Regresyon Hesaplayıcı</h3>
+                <p class="feature-description">
+                    Basit lineer regresyon analizi, R² değeri hesaplama ve 
+                    scatter plot görselleştirme. Ekonometrik veri analizi.
+                </p>
+                <span class="feature-badge" style="background: #f3f4f6; color: #666;">Yakında</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="about-content">
+            <h2>Hakkımda</h2>
+            <p>
+                Merhaba! Hacettepe Üniversitesi İktisat Bölümü öğrencisiyim. 
+                Makroekonomi, finansal piyasalar ve tarımsal ekonomi alanlarına ilgi duyuyorum.
+            </p>
+            <p>
+                Bu siteyi, ekonomi öğrencileri ve finansal piyasalarla ilgilenen herkes için 
+                finansal kavramları daha anlaşılır hale getirmek amacıyla oluşturdum.
+            </p>
+            <p>
+                Akademik kariyerime devam etmeyi ve özellikle tarımsal ekonomi ve 
+                makroekonomik politikalar konularında araştırmalar yapmayı planlıyorum.
+            </p>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Deer Finance</h3>
+                <p>Makroekonomik kavramları anlamak için güvenilir rehberiniz.</p>
+                <p style="margin-top: 1rem;">🦌 Hacettepe Üniversitesi</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Linkler</h3>
+                <a href="calculators.html">Ekonometrik Araçlar</a>
+                <a href="simulation.html">Yolsuzluk Simülasyonu</a>
+                <a href="timeline.html">İktisat Tarihi</a>
+                <a href="data.html">Interactive Data</a>
+                <a href="terms.html">Finansal Terimler</a>
+            </div>
+            <div class="footer-section">
+                <h3>İletişim</h3>
+                <p>📧 E-posta: merthansey@gmail.com</p>
+                <p>🏛️ Hacettepe Üniversitesi<br>İktisadi ve İdari Bilimler Fakültesi</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Deer Finance. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+</body>
+</html>
